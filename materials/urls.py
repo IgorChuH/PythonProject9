@@ -6,6 +6,7 @@ from .views import (
     LessonRetrieveView,
     LessonUpdateView,
     LessonDestroyView,
+    SubscriptionView
 )
 
 router = DefaultRouter()
@@ -17,4 +18,5 @@ urlpatterns = [
     path("lessons/<int:pk>/", LessonRetrieveView.as_view(), name="lesson-detail"),
     path("lessons/<int:pk>/update/", LessonUpdateView.as_view(), name="lesson-update"),
     path("lessons/<int:pk>/delete/", LessonDestroyView.as_view(), name="lesson-delete"),
+    path('subscription/', SubscriptionView.as_view(), name='subscription'),
 ]
