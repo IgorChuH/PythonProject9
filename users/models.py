@@ -76,12 +76,8 @@ class Payment(models.Model):
     amount = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="Сумма оплаты"
     )
-    payment_method = models.CharField(
-        max_length=10,
-        choices=PaymentMethod.choices,
-        default=PaymentMethod.CASH,
-        verbose_name="Способ оплаты",
-    )
+    payment_link = models.URLField(blank=True, null=True)  # ссылка на оплату (checkout session url)
+    status = models.CharField(max_length=50, default='pending')  # pending, paid, failed
 
     class Meta:
         verbose_name = "Платеж"

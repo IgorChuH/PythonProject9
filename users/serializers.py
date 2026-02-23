@@ -30,3 +30,22 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+
+
+class PaymentCreateSerializer(serializers.Serializer):
+    course_id = serializers.IntegerField(required=False, allow_null=True)
+    lesson_id = serializers.IntegerField(required=False, allow_null=True)
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = serializers.ChoiceField(choices=Payment.PaymentMethod.choices, default=Payment.PaymentMethod.CASH)
+
+    def validate(self, data):
+        if not data.get('course_id') and not data.get('lesson_id'):
+            raise serializers.ValidationError("Необходимо указать course_id или lesson_id")
+        if data.get('course_id') and data.get('lesson_id'):
+            raise serializers.ValidationError("Укажите только один объект: курс или урок")
+        return data
+
+class PaymentResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'

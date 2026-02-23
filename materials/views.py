@@ -1,3 +1,5 @@
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -11,9 +13,14 @@ from users.permissions import IsModerator, IsOwner, IsModeratorOrOwner
 
 
 class CourseViewSet(viewsets.ModelViewSet):
+
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     pagination_class = CourseLessonPaginator
+
+    @swagger_auto_schema(operation_description='Получить список курсов')
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
         user = self.request.user
@@ -82,6 +89,23 @@ class LessonDestroyView(generics.DestroyAPIView):
 
 class SubscriptionView(APIView):
     permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'course_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID курса'),
+            },
+            required=['course_id'],
+        ),
+        responses={
+            200: openapi.Response(description='Успешное действие',
+                                  examples={'application/json': {'message': 'подписка добавлена'}}),
+            400: 'Ошибка валидации',
+            401: 'Не авторизован',
+        },
+        operation_description='Подписка/отписка от курса',
+    )
 
     def post(self, request):
         user = request.user
