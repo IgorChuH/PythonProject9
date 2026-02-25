@@ -46,6 +46,12 @@ class CourseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    def perform_update(self, serializer, send_course_update_notification=None):
+        # сохраняем курс
+        course = serializer.save()
+        # вызываем асинхронную задачу
+        send_course_update_notification.delay(course.id)
+
 
 class LessonListCreateView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
