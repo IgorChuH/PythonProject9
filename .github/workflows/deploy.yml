@@ -59,7 +59,7 @@ jobs:
 
   deploy:
     name: Deploy to Server
-    needs: test               # этот job запускается только после успешного прохождения тестов
+    needs: test                # этот job запускается только после успешного прохождения тестов
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'  # только для основной ветки
 
