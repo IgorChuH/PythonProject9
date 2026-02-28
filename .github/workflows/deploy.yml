@@ -42,6 +42,7 @@ jobs:
 
     - name: Run migrations
       env:
+        SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/github_actions
         DJANGO_SETTINGS_MODULE: config.settings
       run: |
@@ -51,7 +52,7 @@ jobs:
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/github_actions
         DJANGO_SETTINGS_MODULE: config.settings
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
         DEBUG: 'False'
       run: |
         python manage.py test
