@@ -50,7 +50,7 @@ jobs:
       run: python manage.py test
 
   deploy:
-    name: Deploy to Server
+    name: Deploy to Windows Server
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -59,7 +59,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Deploy to server via SSH
+    - name: Deploy to Windows Server via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -67,17 +67,25 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || '22' }}
         script: |
+          # Переходим в папку проекта (укажите ваш реальный путь)
+          cd C:\Users\ZIPHAI\Decstop\PythonProject9
           
-          cd Decstop/PythonProject9
-          
+          # Обновляем код
           git pull origin main
           
-          source venv/bin/activate
+          # Активируем виртуальное окружение (Windows)
+          venv\Scripts\activate
           
+          # Устанавливаем зависимости
           pip install -r requirements.txt
           
+          # Применяем миграции
           python manage.py migrate
           
+          # Собираем статику
           python manage.py collectstatic --noinput
           
-          sudo systemctl restart gunicorn
+          # Перезапускаем приложение (способ зависит от вашего сервера)
+          # Вариант 1: если Gunicorn запущен как служба Windows
+          net stop gunicorn || exit /b 0
+          net start gunicorn
