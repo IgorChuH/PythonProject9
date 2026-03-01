@@ -50,7 +50,16 @@ jobs:
       run: python manage.py test
 
   deploy:
-      name: Deploy to Windows Server
+    name: Deploy to Windows Server
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to Windows Server via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -58,24 +67,11 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || '22' }}
         script: |
-          # Переходим в папку проекта
           cd C:\Users\ZIPHAI\Desktop\PythonProject9
-          
-          # Обновляем код
           git pull origin main
-          
-          # Активируем виртуальное окружение
           .\venv\Scripts\activate
-          
-          # Устанавливаем зависимости
           pip install -r requirements.txt
-          
-          # Применяем миграции
           python manage.py migrate
-          
-          # Собираем статику
           python manage.py collectstatic --noinput
-          
-          # Перезапускаем приложение (если запущено как служба)
           Restart-Service -Name gunicorn -ErrorAction SilentlyContinue
         shell: powershell
