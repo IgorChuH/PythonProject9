@@ -67,11 +67,12 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || '22' }}
         script: |
-          cmd /c "cd C:\Users\ZIPHAI\Decstop\PythonProject9"
-          cmd /c "git pull origin main"
-          cmd /c "venv\Scripts\activate"
-          cmd /c "pip install -r requirements.txt"
-          cmd /c "python manage.py migrate"
-          cmd /c "python manage.py collectstatic --noinput"
-          cmd /c "net stop gunicorn || exit /b 0"
-          cmd /c "net start gunicorn"
+          powershell.exe -Command "
+            cd C:\Users\ZIPHAI\Decstop\PythonProject9;
+            git pull origin main;
+            .\venv\Scripts\activate;
+            pip install -r requirements.txt;
+            python manage.py migrate;
+            python manage.py collectstatic --noinput;
+            Restart-Service -Name gunicorn -ErrorAction SilentlyContinue
+          "
