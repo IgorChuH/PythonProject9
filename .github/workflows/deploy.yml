@@ -68,7 +68,7 @@ jobs:
         port: ${{ secrets.SSH_PORT || '22' }}
         script: |
           
-          cd \ZIPHAI\Decstop\PythonProject9
+          cd /home/test/PythonProject9
           
           git pull origin main
           
